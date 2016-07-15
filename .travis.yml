@@ -7,7 +7,7 @@ addons:
       - lua5.2
 before_install:
 - mkdir -p build/dfhack
-- wget https://github.com/DFHack/dfhack/archive/master.tar.gz -O build/dfhack.tar.gz
+- wget https://github.com/DFHack/dfhack/archive/develop.tar.gz -O build/dfhack.tar.gz
 - tar xzf build/dfhack.tar.gz -C build/dfhack --strip-components 1
 script:
 - python build/dfhack/travis/lint.py
