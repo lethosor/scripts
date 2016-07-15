@@ -1,8 +1,15 @@
 sudo: false
-before_install: 
-- git clone --depth=1 git://github.com/dfhack/dfhack
+notifications:
+  email: false
+addons:
+  apt:
+    packages:
+      - lua5.2
+before_install:
+- mkdir -p build
+- git clone --depth=1 git://github.com/dfhack/dfhack build/dfhack
 script:
-- python dfhack/travis/lint.py 
-- python dfhack/travis/script-in-readme.py
-- python dfhack/travis/script-syntax.py --ext=lua --cmd="luac5.2 -p"
-- python dfhack/travis/script-syntax.py --ext=rb --cmd="ruby -c"
+- python build/dfhack/travis/lint.py
+- python build/dfhack/travis/script-in-readme.py
+- python build/dfhack/travis/script-syntax.py --ext=lua --cmd="luac5.2 -p"
+- python build/dfhack/travis/script-syntax.py --ext=rb --cmd="ruby -c"
