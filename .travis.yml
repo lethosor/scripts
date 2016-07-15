@@ -1,0 +1,8 @@
+sudo: false
+before_install: 
+- git clone --depth=1 git://github.com/dfhack/dfhack
+script:
+- python dfhack/travis/lint.py 
+- python dfhack/travis/script-in-readme.py
+- python dfhack/travis/script-syntax.py --ext=lua --cmd="luac5.2 -p"
+- python dfhack/travis/script-syntax.py --ext=rb --cmd="ruby -c"
