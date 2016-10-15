@@ -19,7 +19,25 @@ This can also be run when starting DFHack from the command line::
 
 local gui = require 'gui'
 
-local folder_name = ({...})[1] or qerror("No folder name given")
+local args = {...}
+local folder_name = args[1] or qerror("No folder name given")
+local start_mode = nil
+start_modes = {f = 0, a = 1, l = 2}
+if args[2] then
+    if args[2] == 'start' then
+        if args[3] then
+            local mode = start_modes[args[3]:sub(1, 1)]
+            if mode ~= nil then
+                start_mode = mode
+            end
+        else
+            qerror('Invalid start mode: use f(ortress)|a(dventurer)|l(egends)')
+        end
+    else
+        qerror('Unrecognized subcommand: ' .. args[2])
+    end
+end
+
 
 local loadgame_screen = dfhack.gui.getViewscreenByType(df.viewscreen_loadgamest, 0)
 if not loadgame_screen then
