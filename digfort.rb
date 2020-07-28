@@ -33,10 +33,10 @@ The script takes the plan filename, starting from the root df folder (where
 
 fname = $script_args[0].to_s
 map = df.world.map
-Xsentinel = map.x_count - 1
-Ysentinel = map.y_count - 1
-Xstamp = false
-Ystamp = false
+x_soft_limit = map.x_count - 1
+y_soft_limit = map.y_count - 1
+x_soft_limit_exceeded = false
+y_soft_limit_exceeded = false
 if not $script_args[0] then
     puts "  Usage: digfort <plan filename>"
     throw :script_finished
@@ -82,11 +82,21 @@ planfile.each_line { |l|
     x = 0
     tiles << l.split(/[;,]/).map { |t|
         t = t.strip
-        if x < Xsentinel then x += 1 else x = Xsentinel ; Xstamp = true end
+        if x < x_soft_limit then
+            x += 1
+        else
+            x = x_soft_limit
+            x_soft_limit_exceeded = true
+        end
         max_x = x if x > max_x and not t.empty?
         (t[0] == '"') ? t[1..-2] : t
     }
-    if y < Ysentinel then y += 1 else y = Ysentinel ; Ystamp = true end
+    if y < y_soft_limit then
+        y += 1
+    else
+        y = y_soft_limit
+        y_soft_limit_exceeded = true
+    end
 
 }
 
@@ -105,7 +115,12 @@ tiles.each { |line|
     next if line.empty? or line == ['']
     line.each { |tile|
         if tile.empty?
-            if x < Xsentinel then x += 1 else x = Xsentinel ; Xstamp = true end
+            if x < x_soft_limit then
+                x += 1
+            else
+                x = x_soft_limit
+                x_soft_limit_exceeded = true
+            end
             next
         end
         t = df.map_tile_at(x, y, z)
@@ -121,14 +136,24 @@ tiles.each { |line|
         when '<'; y=starty; z += 1
         when '>'; y=starty; z -= 1
         end
-        if x < Xsentinel then x += 1 else x = Xsentinel ; Xstamp = true end
+        if x < x_soft_limit then
+            x += 1
+        else
+            x = x_soft_limit
+            x_soft_limit_exceeded = true
+        end
     }
     x = df.cursor.x - offset[0]
-    if y < Ysentinel then y += 1 else y = Ysentinel ; Ystamp = true end
+    if y < y_soft_limit then
+        y += 1
+    else
+        y = y_soft_limit
+        y_soft_limit_exceeded = true
+    end
 }
 
-if Xstamp or Ystamp then
-  puts 'Warning: ' + (Xstamp ? 'the columns': '') + (Xstamp and Ystamp ? ' and ': '') + (Ystamp ? 'the rows' : '') + ' of the blueprint that overflow the designable area of the Dwarf Fortress embark have been ignored'
+if x_soft_limit_exceeded or y_soft_limit_exceeded then
+  puts 'Warning: ' + (x_soft_limit_exceeded ? 'the columns': '') + (x_soft_limit_exceeded and y_soft_limit_exceeded ? ' and ': '') + (y_soft_limit_exceeded ? 'the rows' : '') + ' of the blueprint that overflow the designable area of the Dwarf Fortress embark have been ignored'
   puts '         if your blueprint X or Y dimension is close to that of the embark map, this warning is probably a false positive due to faulty logic in this script'
 end
 
