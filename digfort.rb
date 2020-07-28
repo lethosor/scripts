@@ -86,7 +86,7 @@ planfile.each_line { |l|
         max_x = x if x > max_x and not t.empty?
         (t[0] == '"') ? t[1..-2] : t
     }
-    if y < Ysentinel then y += 1 else y = Ysentinel ; Xstamp = true end
+    if y < Ysentinel then y += 1 else y = Ysentinel ; Ystamp = true end
 
 }
 
