@@ -86,9 +86,16 @@ function get_world_date_str()
     return date_str
 end
 
+function chdir_wrapper(name, dir)
+    print(name, "entering:", dir)
+    local ret = dfhack.filesystem.chdir(dir)
+    print(ret and "ok" or "FAILED")
+    return ret
+end
+
 -- Go back to root folder so dfhack does not break, returns true if successfully
 function move_back_to_main_folder()
-    return dfhack.filesystem.chdir(dfhack.getDFPath())
+    return chdir_wrapper("move_back_to_main_folder", dfhack.getDFPath())
 end
 
 -- Set default folder name
@@ -96,7 +103,7 @@ local folder_name = "legends-" .. df.global.world.cur_savegame.save_dir .. "-" .
 -- Go to save folder, returns true if successfully
 function move_to_save_folder()
     if move_back_to_main_folder() then
-        return dfhack.filesystem.chdir(folder_name)
+        return chdir_wrapper("move_to_save_folder", folder_name)
     end
     return false
 end
